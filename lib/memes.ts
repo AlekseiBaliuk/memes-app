@@ -7,7 +7,7 @@ export async function getMemes() {
   return db.prepare("SELECT * FROM memes").all() as Meme[];
 }
 
-export function getMeme(id: number) {
+export async function getMeme(id: number) {
   return db.prepare("SELECT * FROM memes WHERE id = ?").get(id) as Meme;
 }
 

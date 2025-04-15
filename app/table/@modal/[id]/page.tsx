@@ -8,7 +8,7 @@ interface IProps {
 export default async function SlugPage({ params }: IProps) {
   const { id } = await params;
 
-  const meme = getMeme(parseInt(id));
+  const meme = await getMeme(parseInt(id));
 
   if (!meme || !id) return null;
 
