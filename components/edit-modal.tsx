@@ -19,10 +19,10 @@ interface IProps {
   selectedMemeId: string | null;
 }
 export default function EditModal({ selectedMemeId }: IProps) {
-  const [selectedMeme, setSelectedMeme] = useState<Meme | null>(
-    getStoredMemes().find((meme) => meme.id === parseInt(selectedMemeId!)) ??
-      null
-  );
+  // const [selectedMeme, setSelectedMeme] = useState<Meme | null>(
+  //   getStoredMemes().find((meme) => meme.id === parseInt(selectedMemeId!)) ??
+  //     null
+  // );
 
   const { back } = useRouter();
   const [state, formAction] = useActionState(editMeme, {
@@ -35,6 +35,16 @@ export default function EditModal({ selectedMemeId }: IProps) {
       likes: 0,
     },
   });
+
+  const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null);
+
+  useEffect(() => {
+    if (!selectedMemeId) return;
+
+    const memes = getStoredMemes();
+    const meme = memes.find((meme) => meme.id === parseInt(selectedMemeId));
+    setSelectedMeme(meme ?? null);
+  }, [selectedMemeId]);
 
   useEffect(() => {
     if (state.message === "success") {

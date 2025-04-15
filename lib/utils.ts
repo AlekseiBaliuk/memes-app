@@ -4,6 +4,7 @@ import { Meme } from "./types";
 const STORAGE_KEY = "memes";
 
 export function getStoredMemes(): Meme[] {
+  if (typeof window === "undefined") return [];
   const raw = localStorage.getItem(STORAGE_KEY);
   return raw ? JSON.parse(raw) : memesList;
 }
