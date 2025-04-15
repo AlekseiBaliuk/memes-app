@@ -42,6 +42,7 @@ export default function EditModal({ selectedMemeId }: IProps) {
       const updatedMemes = memes.map((meme) =>
         meme.id === state?.newMeme?.id ? state.newMeme : meme
       );
+      setSelectedMeme(state.newMeme ?? null);
       localStorage.setItem("memes", JSON.stringify(updatedMemes));
       window.dispatchEvent(new Event("memesUpdated"));
       back();
