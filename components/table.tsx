@@ -1,6 +1,6 @@
 "use client";
 
-import React, { SVGProps } from "react";
+import React, { SVGProps, useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -12,6 +12,7 @@ import {
 } from "@heroui/react";
 import { Meme } from "@/lib/types";
 import Link from "next/link";
+import { getStoredMemes } from "@/lib/utils";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -65,11 +66,30 @@ export const EditIcon = (props: IconSvgProps) => {
   );
 };
 
-interface IProps {
-  memes: Meme[];
-}
+// interface IProps {
+//   memes: Meme[];
+// }
 
-export default function MemeTable({ memes }: IProps) {
+export default function MemeTable() {
+  const [memes, setMemes] = useState<Meme[]>([]);
+
+  useEffect(() => {
+    const loadMemes = () => {
+      const stotedMemes = getStoredMemes();
+      setMemes(stotedMemes);
+    };
+
+    loadMemes();
+    const stotedMemes = getStoredMemes();
+    setMemes(stotedMemes);
+
+    window.addEventListener("memesUpdated", loadMemes);
+
+    return () => {
+      window.removeEventListener("memesUpdated", loadMemes);
+    };
+  }, []);
+
   const renderCell = async (meme: Meme, columnKey: string) => {
     const cellValue = meme[columnKey as keyof Meme];
 

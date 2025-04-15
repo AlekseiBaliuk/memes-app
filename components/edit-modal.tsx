@@ -10,29 +10,48 @@ import {
   Input,
 } from "@heroui/react";
 import { Meme } from "@/lib/types";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { editMeme } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import { getStoredMemes } from "@/lib/utils";
 
 interface IProps {
-  selectedMeme: Meme | null;
+  selectedMemeId: string | null;
 }
-export default function EditModal({ selectedMeme }: IProps) {
+export default function EditModal({ selectedMemeId }: IProps) {
+  const [selectedMeme, setSelectedMeme] = useState<Meme | null>(
+    getStoredMemes().find((meme) => meme.id === parseInt(selectedMemeId!)) ??
+      null
+  );
+
   const { back } = useRouter();
   const [state, formAction] = useActionState(editMeme, {
     message: "idle",
+    newMeme: {
+      id: 0,
+      title: "",
+      image: "",
+      link: "",
+      likes: 0,
+    },
   });
 
   useEffect(() => {
     if (state.message === "success") {
+      const memes = getStoredMemes();
+      const updatedMemes = memes.map((meme) =>
+        meme.id === state?.newMeme?.id ? state.newMeme : meme
+      );
+      localStorage.setItem("memes", JSON.stringify(updatedMemes));
+      window.dispatchEvent(new Event("memesUpdated"));
       back();
     }
-  }, [back, state]);
+  }, [back, selectedMemeId, state]);
 
   return (
     <div className="modal-backdrop">
       <Modal
-        isOpen={!!selectedMeme}
+        isOpen={!!selectedMemeId}
         onOpenChange={back}
         placement="center"
         backdrop="blur"
