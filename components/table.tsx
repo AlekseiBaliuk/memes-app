@@ -12,7 +12,9 @@ import {
 } from "@heroui/react";
 import { Meme } from "@/lib/types";
 import Link from "next/link";
+// import { memesList } from "@/lib/memesList";
 import { getStoredMemes } from "@/lib/utils";
+import { getValidMemes } from "@/lib/isValidUrl";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -74,9 +76,10 @@ export default function MemeTable() {
   const [memes, setMemes] = useState<Meme[]>([]);
 
   useEffect(() => {
-    const loadMemes = () => {
+    const loadMemes = async () => {
       const stotedMemes = getStoredMemes();
-      setMemes(stotedMemes);
+      const validMemes = await getValidMemes(stotedMemes);
+      setMemes(validMemes);
     };
 
     loadMemes();

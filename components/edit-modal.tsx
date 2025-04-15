@@ -19,10 +19,10 @@ interface IProps {
   selectedMemeId: string | null;
 }
 export default function EditModal({ selectedMemeId }: IProps) {
-  // const [selectedMeme, setSelectedMeme] = useState<Meme | null>(
-  //   getStoredMemes().find((meme) => meme.id === parseInt(selectedMemeId!)) ??
-  //     null
-  // );
+  const [selectedMeme, setSelectedMeme] = useState<Meme | null>(
+    getStoredMemes().find((meme) => meme.id === parseInt(selectedMemeId!)) ??
+      null
+  );
 
   const { back } = useRouter();
   const [state, formAction] = useActionState(editMeme, {
@@ -36,28 +36,39 @@ export default function EditModal({ selectedMemeId }: IProps) {
     },
   });
 
-  const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null);
+  // const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null);
 
-  useEffect(() => {
-    if (!selectedMemeId) return;
+  // useEffect(() => {
+  //   if (!selectedMemeId) return;
 
-    const memes = getStoredMemes();
-    const meme = memes.find((meme) => meme.id === parseInt(selectedMemeId));
-    setSelectedMeme(meme ?? null);
-  }, [selectedMemeId]);
+  //   const memes = getStoredMemes();
+  //   const meme = memes.find((meme) => meme.id === parseInt(selectedMemeId));
+  //   setSelectedMeme(meme ?? null);
+  // }, [selectedMemeId]);
 
   useEffect(() => {
     if (state.message === "success") {
-      const memes = getStoredMemes();
-      const updatedMemes = memes.map((meme) =>
-        meme.id === state?.newMeme?.id ? state.newMeme : meme
-      );
-      setSelectedMeme(state.newMeme ?? null);
-      localStorage.setItem("memes", JSON.stringify(updatedMemes));
-      window.dispatchEvent(new Event("memesUpdated"));
+      // const memes = getStoredMemes();
+      // const updatedMemes = memes.map((meme) =>
+      //   meme.id === state?.newMeme?.id ? state.newMeme : meme
+      // );
+      // setSelectedMeme(state.newMeme ?? null);
+      // localStorage.setItem("memes", JSON.stringify(updatedMemes));
+      // window.dispatchEvent(new Event("memesUpdated"));
       back();
     }
   }, [back, selectedMemeId, state]);
+
+  const saveMeme = () => {
+    if (!selectedMeme) return;
+    const memes = getStoredMemes();
+    const updatedMemes = memes.map((meme) =>
+      meme.id === selectedMeme.id ? selectedMeme : meme
+    );
+
+    localStorage.setItem("memes", JSON.stringify(updatedMemes));
+    window.dispatchEvent(new Event("memesUpdated"));
+  };
 
   return (
     <div className="modal-backdrop">
@@ -96,38 +107,62 @@ export default function EditModal({ selectedMemeId }: IProps) {
                 defaultValue={selectedMeme?.title || ""}
                 variant="bordered"
                 required
+                value={selectedMeme?.title || ""}
                 validate={(value) => {
                   console.log("🚀 ~ EditModal ~ value:", value);
                   if (!value || value.length < 3 || value.length > 100)
                     return "Title is required";
                   return true;
                 }}
+                onChange={(e) =>
+                  setSelectedMeme(
+                    selectedMeme
+                      ? { ...selectedMeme, title: e.target.value }
+                      : null
+                  )
+                }
               />
               <Input
                 label="Image URL"
                 name="image"
                 defaultValue={selectedMeme?.image || ""}
                 variant="bordered"
+                value={selectedMeme?.image || ""}
                 validate={(value) => {
                   if (!value) return "Image URL is required";
                   if (!value || !value.match(/\.(jpg|jpeg)$/i))
                     return "Image URL is required";
                   return true;
                 }}
+                onChange={(e) =>
+                  setSelectedMeme(
+                    selectedMeme
+                      ? { ...selectedMeme, image: e.target.value }
+                      : null
+                  )
+                }
               />
               <Input
                 label="Likes"
                 name="likes"
                 type="number"
                 defaultValue={selectedMeme?.likes.toString() || ""}
+                value={selectedMeme?.likes.toString() || ""}
                 variant="bordered"
+                onChange={(e) =>
+                  setSelectedMeme(
+                    selectedMeme
+                      ? { ...selectedMeme, likes: +e.target.value }
+                      : null
+                  )
+                }
               />
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="light" onPress={back}>
                 Cancel
               </Button>
-              <Button type="submit" color="primary">
+              <Button type="submit" color="primary" onPress={saveMeme}>
                 Save
               </Button>
             </ModalFooter>
