@@ -1,9 +1,11 @@
+import { ReactNode } from "react";
+
 export default function TableLayout({
   children,
   modal,
 }: {
-  children: React.ReactNode;
-  modal: React.ReactNode;
+  children: ReactNode;
+  modal: ReactNode;
 }) {
   return (
     <>
