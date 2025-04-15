@@ -13,5 +13,5 @@ export default async function SlugPage({ params }: IProps) {
 
   if (!id) return null;
 
-  return id ? <EditModal selectedMemeId={id} /> : null;
+  return id ? <EditModal selectedMemeId={id} /> : <></>;
 }
