@@ -10,8 +10,7 @@ import {
   Input,
 } from "@heroui/react";
 import { Meme } from "@/lib/types";
-import { useActionState, useEffect, useState } from "react";
-import { editMeme } from "@/lib/actions";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getStoredMemes } from "@/lib/utils";
 
@@ -25,16 +24,16 @@ export default function EditModal({ selectedMemeId }: IProps) {
   );
 
   const { back } = useRouter();
-  const [state, formAction] = useActionState(editMeme, {
-    message: "idle",
-    newMeme: {
-      id: 0,
-      title: "",
-      image: "",
-      link: "",
-      likes: 0,
-    },
-  });
+  // const [state, formAction] = useActionState(editMeme, {
+  //   message: "idle",
+  //   newMeme: {
+  //     id: 0,
+  //     title: "",
+  //     image: "",
+  //     link: "",
+  //     likes: 0,
+  //   },
+  // });
 
   // const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null);
 
@@ -46,20 +45,22 @@ export default function EditModal({ selectedMemeId }: IProps) {
   //   setSelectedMeme(meme ?? null);
   // }, [selectedMemeId]);
 
-  useEffect(() => {
-    if (state.message === "success") {
-      // const memes = getStoredMemes();
-      // const updatedMemes = memes.map((meme) =>
-      //   meme.id === state?.newMeme?.id ? state.newMeme : meme
-      // );
-      // setSelectedMeme(state.newMeme ?? null);
-      // localStorage.setItem("memes", JSON.stringify(updatedMemes));
-      // window.dispatchEvent(new Event("memesUpdated"));
-      back();
-    }
-  }, [back, selectedMemeId, state]);
+  // useEffect(() => {
+  //   if (message === "success") {
+  //     // const memes = getStoredMemes();
+  //     // const updatedMemes = memes.map((meme) =>
+  //     //   meme.id === state?.newMeme?.id ? state.newMeme : meme
+  //     // );
+  //     // setSelectedMeme(state.newMeme ?? null);
+  //     // localStorage.setItem("memes", JSON.stringify(updatedMemes));
+  //     // window.dispatchEvent(new Event("memesUpdated"));
+  //     back();
+  //   }
+  // }, [back, selectedMemeId]);
 
-  const saveMeme = () => {
+  const saveMeme = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (!selectedMeme) return;
     const memes = getStoredMemes();
     const updatedMemes = memes.map((meme) =>
@@ -68,6 +69,7 @@ export default function EditModal({ selectedMemeId }: IProps) {
 
     localStorage.setItem("memes", JSON.stringify(updatedMemes));
     window.dispatchEvent(new Event("memesUpdated"));
+    back();
   };
 
   return (
@@ -87,7 +89,7 @@ export default function EditModal({ selectedMemeId }: IProps) {
               x
             </Button>
           </ModalHeader>
-          <form action={formAction}>
+          <form onSubmit={saveMeme}>
             <ModalBody>
               <input type="hidden" name="id" value={selectedMeme?.id || ""} />
               <input
@@ -109,7 +111,6 @@ export default function EditModal({ selectedMemeId }: IProps) {
                 required
                 value={selectedMeme?.title || ""}
                 validate={(value) => {
-                  console.log("🚀 ~ EditModal ~ value:", value);
                   if (!value || value.length < 3 || value.length > 100)
                     return "Title is required";
                   return true;
@@ -162,14 +163,14 @@ export default function EditModal({ selectedMemeId }: IProps) {
               <Button color="danger" variant="light" onPress={back}>
                 Cancel
               </Button>
-              <Button type="submit" color="primary" onPress={saveMeme}>
+              <Button type="submit" color="primary">
                 Save
               </Button>
             </ModalFooter>
           </form>
-          {state.message !== "idle" && (
+          {/* {state.message !== "idle" && (
             <p className="text-red-500 text-sm mt-2">{state.message}</p>
-          )}
+          )} */}
         </ModalContent>
       </Modal>
     </div>
